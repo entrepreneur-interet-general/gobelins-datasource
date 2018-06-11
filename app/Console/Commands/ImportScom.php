@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class ImportScom extends Command
 {
@@ -38,16 +39,10 @@ class ImportScom extends Command
     }
 
     /**
-     * Load SCOM dump into local database
-     *
-     * @return void
+     * Drop the default postgresql database.
      */
-    private function loadDump()
+    private function dropDatabase()
     {
-        $scom_dump_file_path = env('SCOM_DUMP_FILE_PATH');
-        
-        $this->comment('Loading database dump: ' . $scom_dump_file_path);
-
         $sql_disconnect_other_users = "SELECT pg_terminate_backend(pg_stat_activity.pid) 
                                        FROM pg_stat_activity
                                        WHERE pg_stat_activity.datname = '$this->db'
@@ -55,11 +50,71 @@ class ImportScom extends Command
         exec("psql -h $this->host -U $this->username -w -d template1 -c \"$sql_disconnect_other_users\"");
         exec("psql -h $this->host -U $this->username -w -d template1 -c \"DROP DATABASE $this->db\"");
         exec("psql -h $this->host -U $this->username -w -d template1 -c \"CREATE DATABASE $this->db\"");
+    }
+
+    /**
+     * Load the consolidated SCOM dump file into the local database.
+     * This dump file is exported manually from the PSQL database on
+     * the IT dept of the Mobilier National.
+     *
+     * @return void
+     */
+    private function loadConsolidatedDump()
+    {
+        $scom_dump_file_path = env('SCOM_DUMP_FILE_PATH');
+        
+        $this->comment('Loading database dump: ' . $scom_dump_file_path);
         
         // The dump file is about 250 MB, this takes a few seconds on my laptop.
         exec("psql -h $this->host -U $this->username -w -d $this->db -f $scom_dump_file_path");
         
         $this->comment('Load complete');
+    }
+    
+    private function loadTablesDump()
+    {
+        $dir = storage_path(env('SCOM_DUMP_DIRECTORY_PATH'));
+        $files = scandir($dir);
+
+        $this->comment('Loading database dumps from directory: ' . $dir);
+
+        putenv("PGCLIENTENCODING=WIN1252");
+        
+        $create_tables_file = $dir . '/createTables.sql';
+        $this->comment('Create tables: '.$create_tables_file);
+        //exec("iconv -f WINDOWS-1252 -t UTF-8 -o $create_tables_file $create_tables_file");
+        exec("psql -h $this->host -U $this->username -w -d $this->db -f $create_tables_file");
+        
+        $files_of_interest = [
+            'Export_ANCNUM.sql',
+            'Export_AUT.sql',
+            'Export_EPO.sql',
+            'Export_GAR.sql',
+            'Export_GRACAT.sql',
+            'Export_MAT.sql',
+            'Export_OBJ.sql',
+            'Export_OBJAUT.sql',
+            'Export_OBJGAR.sql',
+            'Export_OBJMAT.sql',
+            'Export_OBJNOTE.sql',
+            'Export_PHOTO.sql',
+            'Export_STY.sql',
+        ];
+
+        collect($files)->filter(function ($f) use ($files_of_interest) {
+            // return strpos($f, 'Export_') !== false;
+            return in_array($f, $files_of_interest);
+        })->map(function ($f) use ($dir) {
+            return "$dir/$f";
+        })->map(function ($f) {
+            $this->comment('Loading: ' . $f);
+            exec("psql -h $this->host -U $this->username -w -d $this->db -f $f");
+            return null;
+        });
+        
+        $this->comment('Load complete');
+        
+        putenv("PGCLIENTENCODING");
     }
 
     private function wrangleSchema()
@@ -119,7 +174,9 @@ class ImportScom extends Command
         $password       = \Config::get('database.connections.pgsql.password');
 
         $this->withEnvPassword($password, function () {
-            $this->loadDump();
+            $this->dropDatabase();
+            //$this->loadConsolidatedDump();
+            $this->loadTablesDump();
             $this->wrangleSchema();
         });
         

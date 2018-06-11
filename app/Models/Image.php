@@ -18,7 +18,7 @@ class Image extends Model
      */
     public function getCleanPathAttribute()
     {
-        $path = preg_replace('/^(C\:\\\\APPLIWIN\\\\Collecti\\\\Photos\\\\BD\\\\)(.+)$/i', '$2', $this->pathphotobd);
+        $path = preg_replace('/^(.*?\\\\BD\\\\)(.+)$/i', '$2', $this->pathphotobd);
         $path = str_replace('\\', '/', $path);
         return $path . '/' . $this->nomphoto;
     }
