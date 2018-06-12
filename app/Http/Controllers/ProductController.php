@@ -15,6 +15,7 @@ class ProductController extends Controller
         'legacyInventoryNumbers',
         'productType',
         'productStyle',
+        'materials',
     ];
 
     public function index()

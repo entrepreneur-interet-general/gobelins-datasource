@@ -43,6 +43,11 @@ class Product extends Model
     {
         return $this->belongsTo(ProductStyle::class, 'numsty');
     }
+
+    public function materials()
+    {
+        return $this->belongsToMany(Material::class, 'objmat', 'obj_id', 'codmat');
+    }
     
 
     // Scopes

@@ -28,7 +28,8 @@ class ProductResource extends JsonResource
             'height_or_thickness' => $this->hauepa,
             'length_or_diameter' => $this->londia,
             'depth_or_width' => $this->prolar,
-
+            'materials' => MaterialResource::collection($this->whenLoaded('materials')),
+            
             // History
             'conception_year' => $this->conception_year,
 
