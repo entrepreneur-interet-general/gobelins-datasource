@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ImageResource extends JsonResource
+class UpholsteryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +15,8 @@ class ImageResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'path' => $this->cleanPath,
-            'is_poster' => boolval($this->photoprinc),
+            'id' => $this->codgar,
+            'name' => $this->gar,
         ];
     }
 }

@@ -11,24 +11,39 @@ class Author extends Model
     protected $table = 'aut';
     protected $primaryKey = 'codaut';
 
-    public function getLastNameAttribute()
+    public function getFullNameAttribute()
     {
-        $matches = [];
-        preg_match('/([- A-Z]*)\b/', $this->aut, $matches);
-        return $matches[1] ?: null;
+        // Remove all biographical information,
+        // by convention between parentesis.
+        if (strpos($this->aut, '(') !== false) {
+            $truncated = trim(substr($this->aut, 0, strpos($this->aut, '(')));
+        } else {
+            $truncated = trim($this->aut);
+        }
+        return $truncated;
     }
 
-
-    // ^([- A-Z]+)\s*([A-Z][a-z][-A-Za-z]+)?\s*(\(.*?(\d{4}).*?(\d{4}).*?\))?$
-    // public function decomposeName()
-    // {
-    //     // Does the name have biography details?
-    //     // They are always between parentesis.
-    //     if (strpos($this->name, '(') !== false) {
-    //         $matches = [];
-    //         $bio = preg_match('/.*(\(.*?\)).*/', $this->name, $matches);
-
-    //     } else {
-    //     }
-    // }
+    private function splitNameSegments()
+    {
+        $matches = [];
+        if (preg_match('/^([- A-Z]+)\b((?:[A-Z](?:\p{L}|-| )+)*)$/u', $this->full_name, $matches) === 1) {
+            $this->attributes['first_name'] = trim($matches[2]);
+            $this->attributes['last_name'] = trim($matches[1]);
+        } else {
+            $this->attributes['first_name'] = '';
+            $this->attributes['last_name'] = $this->fullName;
+        }
+    }
+    
+    public function getFirstNameAttribute()
+    {
+        $this->splitNameSegments();
+        return $this->attributes['first_name'];
+    }
+        
+    public function getLastNameAttribute()
+    {
+        $this->splitNameSegments();
+        return $this->attributes['last_name'];
+    }
 }

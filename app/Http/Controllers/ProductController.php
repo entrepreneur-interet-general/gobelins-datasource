@@ -16,11 +16,13 @@ class ProductController extends Controller
         'productType',
         'productStyle',
         'materials',
+        'upholstery',
     ];
 
     public function index()
     {
-        $products  = Product::with(static::$eagerAssociations)->orderBy('datmaj')->paginate(10);
+        // Missing objects when ordering by 'datmaj'.
+        $products  = Product::with(static::$eagerAssociations)->orderBy('id')->paginate(100);
         return ProductResource::collection($products);
     }
 

@@ -138,6 +138,9 @@ class ImportScom extends Command
 
         $wrangle_schema .= "ALTER TABLE objmat ADD obj_id varchar(21);";
         $wrangle_schema .= "UPDATE objmat SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
+        
+        $wrangle_schema .= "ALTER TABLE objgar ADD obj_id varchar(21);";
+        $wrangle_schema .= "UPDATE objgar SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
 
         
         exec("psql -h $this->host -U $this->username -w -d $this->db -c \"$wrangle_schema\"");

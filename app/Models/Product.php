@@ -48,6 +48,11 @@ class Product extends Model
     {
         return $this->belongsToMany(Material::class, 'objmat', 'obj_id', 'codmat');
     }
+
+    public function upholstery()
+    {
+        return $this->belongsToMany(Upholstery::class, 'objgar', 'obj_id', 'codgar');
+    }
     
 
     // Scopes
@@ -62,8 +67,7 @@ class Product extends Model
 
     public function getConceptionYearAttribute()
     {
-        // return ($this->anncon <= 0) ? null : $this->anncon;
-        return $this->anncon;
+        return ($this->anncon === -1) ? null : $this->anncon;
     }
 
     public function getDescriptionAttribute()
