@@ -25,9 +25,9 @@ class ProductResource extends JsonResource
                 LegacyInventoryNumberResource::collection($this->whenLoaded('legacyInventoryNumbers')),
 
             // Physical properties
-            'height_or_thickness' => $this->hauepa == 0 ? null : $this->hauepa,
-            'length_or_diameter' => $this->londia == 0 ? null : $this->londia,
-            'depth_or_width' => $this->prolar == 0 ? null : $this->prolar,
+            'height_or_thickness' => $this->hauepa == 0 ? null : floatval($this->hauepa),
+            'length_or_diameter' => $this->londia == 0 ? null : floatval($this->londia),
+            'depth_or_width' => $this->prolar == 0 ? null : floatval($this->prolar),
             'materials' => MaterialResource::collection($this->whenLoaded('materials')),
             'upholstery' => UpholsteryResource::collection($this->whenLoaded('upholstery')),
             

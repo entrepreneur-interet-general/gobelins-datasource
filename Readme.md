@@ -22,6 +22,7 @@ All endpoints return data in JSON format.
 GET /api/products/
 GET /api/products/?page=2
 ```
+
 Returns a list of 10 products, including authorships, authors, category, period, style, etc.
 Includes a `links` object including `next` and `prev`, allowing the API consumer to crawl the
 entire dataset.
@@ -29,11 +30,17 @@ entire dataset.
 ```
 GET /api/products/{id}
 ```
+
 Individual product, with relationships.
 
-
 ### Setup
+
 ```shell
+php artisan migrate:install
+php artisan migrate
+# …
+# Manually copy the database dump files (*.sql) into storage/app/scom_latest
+# …
 php artisan gobelins:import_scom -vvv
 ```
 
