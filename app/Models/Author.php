@@ -46,7 +46,7 @@ class Author extends Model
         $this->splitNameSegments();
         return $this->attributes['last_name'];
     }
-
+    
     public function getYearOfBirthAttribute()
     {
         if ($this->datnaiss) {

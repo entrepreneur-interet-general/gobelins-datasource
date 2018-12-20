@@ -17,6 +17,7 @@ class ProductController extends Controller
         'productStyle',
         'materials',
         'upholstery',
+        'publicationState',
     ];
 
     public function index()

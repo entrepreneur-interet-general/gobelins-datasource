@@ -54,6 +54,12 @@ class Product extends Model
         return $this->belongsToMany(Upholstery::class, 'objgar', 'obj_id', 'codgar');
     }
     
+    public function publicationState()
+    {
+        return $this->belongsTo(PublicationState::class, 'numdiffusion');
+    }
+
+
 
     // Scopes
 
@@ -76,6 +82,11 @@ class Product extends Model
     }
     
     public function getBibliographyAttribute()
+    {
+        return Str::normalizedNewLines(trim($this->bio));
+    }
+
+    public function getIsPublishedAttribute()
     {
         return Str::normalizedNewLines(trim($this->bio));
     }
