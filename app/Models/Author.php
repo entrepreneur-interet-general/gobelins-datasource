@@ -46,4 +46,32 @@ class Author extends Model
         $this->splitNameSegments();
         return $this->attributes['last_name'];
     }
+    
+    public function getYearOfBirthAttribute()
+    {
+        if ($this->datnaiss) {
+            return substr((string) $this->datnaiss, 0, 4);
+        } else {
+            // First group of 4 numbers
+            if (preg_match('/.+?([0-9]{4}).*/u', $this->aut, $matches) === 1) {
+                return $matches[1];
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public function getYearOfDeathAttribute()
+    {
+        if ($this->datdeces) {
+            return substr((string) $this->datdeces, 0, 4);
+        } else {
+            // Last group of 4 numbers
+            if (preg_match('/.+?[0-9]{4}.+([0-9]{4}).*/u', $this->aut, $matches) === 1) {
+                return $matches[1];
+            } else {
+                return null;
+            }
+        }
+    }
 }

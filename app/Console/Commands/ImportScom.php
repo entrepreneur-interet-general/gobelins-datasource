@@ -88,6 +88,7 @@ class ImportScom extends Command
         $files_of_interest = [
             'Export_ANCNUM.sql',
             'Export_AUT.sql',
+            'Export_DIFFUSION.sql',
             'Export_EPO.sql',
             'Export_GAR.sql',
             'Export_GRACAT.sql',

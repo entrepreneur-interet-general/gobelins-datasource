@@ -59,6 +59,10 @@ class ProductResource extends JsonResource
 
             // Media
             'images' => ImageResource::collection($this->whenLoaded('images')),
+            
+            // Meta
+            
+            'publication_state' => new PublicationStateResource($this->whenLoaded('publicationState')),
 
         ];
     }
