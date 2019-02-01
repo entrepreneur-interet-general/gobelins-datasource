@@ -21,8 +21,7 @@ class ProductResource extends JsonResource
             'inventory_root' => $this->numinv1,
             'inventory_number' => $this->numinv2,
             'inventory_suffix' => $this->numinv3,
-            'legacy_inventory_numbers' =>
-                LegacyInventoryNumberResource::collection($this->whenLoaded('legacyInventoryNumbers')),
+            'legacy_inventory_number' => $this->legacyInventoryNumber,
 
             // Physical properties
             'height_or_thickness' => $this->hauepa == 0 ? null : floatval($this->hauepa),

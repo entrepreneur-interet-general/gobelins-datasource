@@ -29,6 +29,11 @@ class Product extends Model
         return $this->belongsTo(Period::class, 'numepo');
     }
 
+    /***
+     * SCOM idiosyncrasy: defined as n-t-n relation in DB, but
+     * displayed as single text field in UI.
+     * See getLegacyInventoryNumberAttribute() below.
+     */
     public function legacyInventoryNumbers()
     {
         return $this->hasMany(LegacyInventoryNumber::class, 'obj_id');
@@ -89,5 +94,21 @@ class Product extends Model
     public function getIsPublishedAttribute()
     {
         return Str::normalizedNewLines(trim($this->bio));
+    }
+
+    /**
+     * SCOM handles legacy inventory numbers as a n-to-n
+     * relation, when in the UI it is displayed as a single
+     * text field.
+     *
+     * @return string|null
+     */
+    public function getLegacyInventoryNumberAttribute()
+    {
+        $leginv = $this->legacyInventoryNumbers->first();
+        if ($leginv) {
+            return Str::normalizedNewLines(trim($leginv->ancnuminv));
+        }
+        return null;
     }
 }
