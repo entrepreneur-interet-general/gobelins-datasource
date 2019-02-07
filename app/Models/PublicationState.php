@@ -19,6 +19,7 @@ class PublicationState extends Model
         'NP-NL' => false,
         'NP-U' => false,
         'NP-&c' => false,
+        'NP-null' => false,
     ];
 
 
