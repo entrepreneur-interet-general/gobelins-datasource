@@ -61,7 +61,9 @@ class Product extends Model
     
     public function publicationState()
     {
-        return $this->belongsTo(PublicationState::class, 'numdiffusion');
+        return $this->belongsTo(PublicationState::class, 'numdiffusion')->withDefault([
+            'coddiffusion' => '?',
+        ]);
     }
 
 
