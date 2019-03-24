@@ -29,6 +29,11 @@ class Product extends Model
         return $this->belongsTo(Period::class, 'numepo');
     }
 
+    public function entryMode()
+    {
+        return $this->belongsTo(EntryMode::class, 'nummodeentreecollection');
+    }
+
     /***
      * SCOM idiosyncrasy: defined as n-t-n relation in DB, but
      * displayed as single text field in UI.

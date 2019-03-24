@@ -36,6 +36,7 @@ class ProductResource extends JsonResource
             // Provenance
             'acquisition_origin' => $this->proori,
             'acquisition_date' => $this->prodat,
+            'acquisition_mode' => new EntryModeResource($this->whenLoaded('entryMode')),
              
             // Classification monuments historiques.
             'listed_as_historic_monument' => ($this->clatyp == 'MH'),
