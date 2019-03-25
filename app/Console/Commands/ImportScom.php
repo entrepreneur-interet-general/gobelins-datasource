@@ -100,6 +100,7 @@ class ImportScom extends Command
             'Export_OBJNOTE.sql',
             'Export_PHOTO.sql',
             'Export_STY.sql',
+            'Export_MODEENTREECOLLECTION.sql',
         ];
 
         collect($files)->filter(function ($f) use ($files_of_interest) {
