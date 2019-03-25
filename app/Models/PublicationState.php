@@ -10,18 +10,18 @@ class PublicationState extends Model
     protected $primaryKey = 'numdiffusion';
 
     const PUBLICATION_MAP = [
-        '?' => true,
-        'P' => true,
-        'P+D' => true,
-        'P+D+P' => true,
-        'NP-R' => false,
-        'NP-MV' => false,
-        'NP-NL' => false,
-        'NP-U' => false,
-        'NP-&c' => false,
-        'NP-null' => false,
+        '?' => true,        // À définir
+        'P' => true,        // Publiable (données minimum)
+        'P+D' => true,      // Publiable + description
+        'P+D+P' => true,    // ??? Not sure this still exists
+        'P+D+O' => true,    // Publiable + description + origine détail
+        'NP-R' => false,    // Non publiable > radié
+        'NP-MV' => false,   // Non publiable > mauvais état
+        'NP-NL' => false,   // Non publiable > non localisé
+        'NP-U' => false,    // Non publiable > usuel
+        'NP-&c' => false,   // Non publiable > autre raison
+        'NP-null' => false, // ??? Not sure this still exists
     ];
-
 
     // Eloquent relationships
 
