@@ -98,11 +98,6 @@ class Product extends Model
         return Str::normalizedNewLines(trim($this->bio));
     }
 
-    public function getIsPublishedAttribute()
-    {
-        return Str::normalizedNewLines(trim($this->bio));
-    }
-
     /**
      * SCOM handles legacy inventory numbers as a n-to-n
      * relation, when in the UI it is displayed as a single
