@@ -61,7 +61,7 @@ class ImportScom extends Command
      */
     private function loadConsolidatedDump()
     {
-        $scom_dump_file_path = env('SCOM_DUMP_FILE_PATH');
+        $scom_dump_file_path = Config::get('app.scom_dump_file_path');
         
         $this->comment('Loading database dump: ' . $scom_dump_file_path);
         
@@ -73,7 +73,7 @@ class ImportScom extends Command
     
     private function loadTablesDump()
     {
-        $dir = storage_path(env('SCOM_DUMP_DIRECTORY_PATH'));
+        $dir = storage_path(Config::get('app.scom_dump_directory_path'));
         $files = scandir($dir);
 
         $this->comment('Loading database dumps from directory: ' . $dir);
@@ -183,7 +183,7 @@ class ImportScom extends Command
         $password       = \Config::get('database.connections.pgsql.password');
 
         $this->withEnvPassword($password, function () {
-            $this->dropDatabase();
+            //$this->dropDatabase();
             //$this->loadConsolidatedDump();
             $this->loadTablesDump();
             $this->wrangleSchema();

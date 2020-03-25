@@ -212,4 +212,7 @@ return [
 
     ],
 
+    'scom_dump_file_path' => env('SCOM_DUMP_FILE_PATH'),
+    'scom_dump_directory_path' => env('SCOM_DUMP_DIRECTORY_PATH'),
+
 ];
