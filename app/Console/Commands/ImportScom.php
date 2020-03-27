@@ -61,7 +61,7 @@ class ImportScom extends Command
      */
     private function loadConsolidatedDump()
     {
-        $scom_dump_file_path = Config::get('app.scom_dump_file_path');
+        $scom_dump_file_path = \Config::get('app.scom_dump_file_path');
         
         $this->comment('Loading database dump: ' . $scom_dump_file_path);
         
@@ -73,7 +73,7 @@ class ImportScom extends Command
     
     private function loadTablesDump()
     {
-        $dir = storage_path(Config::get('app.scom_dump_directory_path'));
+        $dir = storage_path(\Config::get('app.scom_dump_directory_path'));
         $files = scandir($dir);
 
         $this->comment('Loading database dumps from directory: ' . $dir);
