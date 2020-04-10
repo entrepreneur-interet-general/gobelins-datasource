@@ -63,6 +63,7 @@ class ProductResource extends JsonResource
             // Meta
             
             'publication_state' => new PublicationStateResource($this->whenLoaded('publicationState')),
+            'updated_on' => $this->datmaj,
 
         ];
     }
