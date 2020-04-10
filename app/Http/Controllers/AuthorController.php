@@ -10,7 +10,7 @@ class AuthorController extends Controller
 {
     public function show($id)
     {
-        $author = Author::findByCodaut($id);
+        $author = Author::byLegacyCode($id)->firstorFail();
         return new AuthorResource($author);
     }
 

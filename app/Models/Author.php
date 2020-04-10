@@ -74,4 +74,9 @@ class Author extends Model
             }
         }
     }
+
+    public function scopeByLegacyCode($query, $codaut)
+    {
+        return $query->where('codaut', '=', $codaut);
+    }
 }
