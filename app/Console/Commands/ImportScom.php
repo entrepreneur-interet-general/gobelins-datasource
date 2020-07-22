@@ -12,7 +12,7 @@ class ImportScom extends Command
      *
      * @var string
      */
-    protected $signature = 'gobelins:import_scom';
+    protected $signature = 'gobelins:import_scom {--all : Import all tables}';
 
     /**
      * The console command description.
@@ -104,8 +104,12 @@ class ImportScom extends Command
         ];
 
         collect($files)->filter(function ($f) use ($files_of_interest) {
-            // return strpos($f, 'Export_') !== false;
-            return in_array($f, $files_of_interest);
+            if ($this->option('all')) {
+                // Import all SCOM tables, even the ones the app doesn't use.
+                return preg_match('/.*Export_.+\.sql$/i', $f) === 1;
+            } else {
+                return in_array($f, $files_of_interest);
+            }
         })->map(function ($f) use ($dir) {
             return "$dir/$f";
         })->map(function ($f) {
@@ -124,27 +128,57 @@ class ImportScom extends Command
         $this->comment('Wrangling schema');
         
         // Add single column relations, for the ORM.
+        // Add foreign key relations, for Metabase ?
+        
+        $wrangle_schema  = "";
         $wrangle_schema  = "ALTER TABLE obj ADD id varchar(21);";
         $wrangle_schema .= "UPDATE obj SET id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
+        $wrangle_schema .= "ALTER TABLE obj ADD PRIMARY KEY (id);";
+
         
         $wrangle_schema .= "ALTER TABLE objaut ADD obj_id varchar(21);";
         $wrangle_schema .= "UPDATE objaut SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
         $wrangle_schema .= "ALTER TABLE objaut ADD COLUMN id BIGSERIAL PRIMARY KEY;";
+        $wrangle_schema .= "ALTER TABLE objaut ADD CONSTRAINT objaut_obj_id_fkey FOREIGN KEY (obj_id) REFERENCES obj (id);";
         
         $wrangle_schema .= "ALTER TABLE photo ADD obj_id varchar(21);";
         $wrangle_schema .= "UPDATE photo SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
         $wrangle_schema .= "ALTER TABLE photo ADD COLUMN id BIGSERIAL PRIMARY KEY;";
+        // Can't add fkey, because referential integrity is not assured :(
+        // $wrangle_schema .= "ALTER TABLE photo ADD CONSTRAINT photo_obj_id_fkey FOREIGN KEY (obj_id) REFERENCES obj (id);";
+
         
         $wrangle_schema .= "ALTER TABLE ancnum ADD obj_id varchar(21);";
         $wrangle_schema .= "UPDATE ancnum SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
+        $wrangle_schema .= "ALTER TABLE ancnum ADD PRIMARY KEY (ancnum);";
+        $wrangle_schema .= "ALTER TABLE ancnum ADD CONSTRAINT ancnum_obj_id_fkey FOREIGN KEY (obj_id) REFERENCES obj (id);";
+
+        $wrangle_schema .= "ALTER TABLE mat ADD PRIMARY KEY (codmat);";
+        
+        $wrangle_schema .= "ALTER TABLE gar ADD PRIMARY KEY (codgar);";
 
         $wrangle_schema .= "ALTER TABLE objmat ADD obj_id varchar(21);";
         $wrangle_schema .= "UPDATE objmat SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
+        $wrangle_schema .= "ALTER TABLE objmat ADD CONSTRAINT objmat_obj_id_fkey FOREIGN KEY (obj_id) REFERENCES obj (id);";
+        $wrangle_schema .= "ALTER TABLE objmat ADD CONSTRAINT objmat_codmat_fkey FOREIGN KEY (codmat) REFERENCES mat (codmat);";
         
         $wrangle_schema .= "ALTER TABLE objgar ADD obj_id varchar(21);";
         $wrangle_schema .= "UPDATE objgar SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
-
+        $wrangle_schema .= "ALTER TABLE objgar ADD CONSTRAINT objgar_obj_id_fkey FOREIGN KEY (obj_id) REFERENCES obj (id);";
+        $wrangle_schema .= "ALTER TABLE objgar ADD CONSTRAINT objgar_codgar_fkey FOREIGN KEY (codgar) REFERENCES gar (codgar);";
         
+
+        if ($this->option('all')) {
+            $wrangle_schema .= "ALTER TABLE ben ADD PRIMARY KEY (codben);";
+            $wrangle_schema .= "ALTER TABLE cad ADD PRIMARY KEY (codcad);";
+            $wrangle_schema .= "ALTER TABLE cat ADD PRIMARY KEY (codcat);";
+
+            $wrangle_schema .= "ALTER TABLE cli ADD obj_id varchar(21);";
+            $wrangle_schema .= "UPDATE cli SET obj_id = CONCAT(numinv1, '-', numinv2, '-', numinv3);";
+            // Can't add a fkey, because faulty referential integrity (ref to 'GMEC-252-003' that doesn't exist in obj table).
+            // $wrangle_schema .= "ALTER TABLE cli ADD CONSTRAINT cli_obj_id_fkey FOREIGN KEY (obj_id) REFERENCES obj (id);";
+        }
+
         exec("psql -h $this->host -U $this->username -w -d $this->db -c \"$wrangle_schema\"");
         
         $this->comment('Wrangling complete');
